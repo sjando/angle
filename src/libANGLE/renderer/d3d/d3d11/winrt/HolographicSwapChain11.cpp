@@ -61,9 +61,11 @@ bool NeedsOffscreenTexture(Renderer11 *renderer, NativeWindow nativeWindow, EGLi
 }
 }  // anonymous namespace
 
-
+DirectX::XMFLOAT4X4 HolographicSwapChain11::mViewMatrices[2];
 DirectX::XMFLOAT4X4 HolographicSwapChain11::mMidViewMatrix;
 DirectX::XMFLOAT4X4 HolographicSwapChain11::mMidViewMatrixInverse;
+DirectX::XMFLOAT4X4 HolographicSwapChain11::mProjectionMatrices[2];
+DirectX::XMFLOAT4X4 HolographicSwapChain11::mMidProjectionMatrix;
 bool HolographicSwapChain11::mUseAutomaticStereoRendering              = true;
 bool HolographicSwapChain11::mUseAutomaticDepthBasedImageStabilization = false;
 bool HolographicSwapChain11::mWaitForVBlank = true;
@@ -102,7 +104,12 @@ HolographicSwapChain11::HolographicSwapChain11(Renderer11 *renderer,
     mHolographicCamera->SetFarPlaneDistance(mFarPlaneDistance);
 
     XMStoreFloat4x4(&mMidViewMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&mViewMatrices[0], XMMatrixIdentity());
+    XMStoreFloat4x4(&mViewMatrices[1], XMMatrixIdentity());
     XMStoreFloat4x4(&mMidViewMatrixInverse, XMMatrixIdentity());
+    XMStoreFloat4x4(&mMidProjectionMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&mProjectionMatrices[0], XMMatrixIdentity());
+    XMStoreFloat4x4(&mProjectionMatrices[1], XMMatrixIdentity());
 
     InitDepthCurveArray(
         mNearPlaneDistance,
@@ -606,13 +613,12 @@ EGLint HolographicSwapChain11::updateHolographicRenderingParameters()
                 mMidViewMatrix._13 = -mMidViewMatrix._13;
 
                 // store view matrix
-                DirectX::XMFLOAT4X4 view[2];
                 DirectX::XMStoreFloat4x4(
-                    &view[0],
+                    &mViewMatrices[0],
                     DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&viewTransform.Left))
                 );
                 DirectX::XMStoreFloat4x4(
-                    &view[1],
+                    &mViewMatrices[1],
                     DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&viewTransform.Right))
                 );
                 
@@ -627,14 +633,24 @@ EGLint HolographicSwapChain11::updateHolographicRenderingParameters()
                     DirectX::XMStoreFloat4x4(&mViewInverse, leftViewInverse);
                 }
 
+                // get projection matrix
+                const auto leftProjectionMatrix = DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&projectionTransform.Left));
+                const auto rightProjectionMatrix = DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&projectionTransform.Right));
+
+                // interpolate projection matrix
+                if (mHolographicCameraId == 0)
+                {
+                    // TODO: provide combined matrix
+                    DirectX::XMStoreFloat4x4(&mMidProjectionMatrix, rightProjectionMatrix);
+                }
+
                 // get projection
-                DirectX::XMFLOAT4X4 proj[2];
                 DirectX::XMStoreFloat4x4(
-                    &proj[0],
+                    &mProjectionMatrices[0],
                     DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&projectionTransform.Left))
                 );
                 DirectX::XMStoreFloat4x4(
-                    &proj[1],
+                    &mProjectionMatrices[1],
                     DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&projectionTransform.Right))
                 );
                 DirectX::XMStoreFloat4x4(
@@ -663,7 +679,7 @@ EGLint HolographicSwapChain11::updateHolographicRenderingParameters()
                         }
                         else
                         {
-                            program->setUniformMatrix4fv(viewMatrixIndex, 2, GL_FALSE, (GLfloat*) view);
+                            program->setUniformMatrix4fv(viewMatrixIndex, 2, GL_FALSE, (GLfloat*) mViewMatrices);
                         }
                     }
 
@@ -682,7 +698,7 @@ EGLint HolographicSwapChain11::updateHolographicRenderingParameters()
                         }
                         else
                         {
-                            program->setUniformMatrix4fv(projectionMatrixIndex, 2, GL_FALSE, (GLfloat*) proj);
+                            program->setUniformMatrix4fv(projectionMatrixIndex, 2, GL_FALSE, (GLfloat*) mProjectionMatrices);
                         }
                     }
 
@@ -996,6 +1012,32 @@ ID3D11Texture2D *HolographicSwapChain11::getDepthStencilTexture()
 DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getMidViewMatrix()
 {
     return mMidViewMatrix;
+}
+
+DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getLeftViewMatrix()
+{
+    return mViewMatrices[0];
+}
+
+DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getRightViewMatrix()
+{
+    return mViewMatrices[1];
+}
+
+
+DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getMidProjectionMatrix()
+{
+    return mMidProjectionMatrix;
+}
+
+DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getLeftProjectionMatrix()
+{
+    return mProjectionMatrices[0];
+}
+
+DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getRightProjectionMatrix()
+{
+    return mProjectionMatrices[1];
 }
 
 bool const& HolographicSwapChain11::getIsAutomaticStereoRenderingEnabled()
