@@ -104,12 +104,12 @@ HolographicSwapChain11::HolographicSwapChain11(Renderer11 *renderer,
     mHolographicCamera->SetFarPlaneDistance(mFarPlaneDistance);
 
     XMStoreFloat4x4(&mMidViewMatrix, XMMatrixIdentity());
-	XMStoreFloat4x4(&mViewMatrices[0], XMMatrixIdentity());
-	XMStoreFloat4x4(&mViewMatrices[1], XMMatrixIdentity());
+    XMStoreFloat4x4(&mViewMatrices[0], XMMatrixIdentity());
+    XMStoreFloat4x4(&mViewMatrices[1], XMMatrixIdentity());
     XMStoreFloat4x4(&mMidViewMatrixInverse, XMMatrixIdentity());
-	XMStoreFloat4x4(&mMidProjectionMatrix, XMMatrixIdentity());
-	XMStoreFloat4x4(&mProjectionMatrices[0], XMMatrixIdentity());
-	XMStoreFloat4x4(&mProjectionMatrices[1], XMMatrixIdentity());
+    XMStoreFloat4x4(&mMidProjectionMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&mProjectionMatrices[0], XMMatrixIdentity());
+    XMStoreFloat4x4(&mProjectionMatrices[1], XMMatrixIdentity());
 
     InitDepthCurveArray(
         mNearPlaneDistance,
@@ -626,16 +626,16 @@ EGLint HolographicSwapChain11::updateHolographicRenderingParameters(
                     DirectX::XMStoreFloat4x4(&mViewInverse, leftViewInverse);
                 }
 
-				// get projection matrix
-				const auto leftProjectionMatrix = DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&projectionTransform.Left));
-				const auto rightProjectionMatrix = DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&projectionTransform.Right));
+                // get projection matrix
+                const auto leftProjectionMatrix = DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&projectionTransform.Left));
+                const auto rightProjectionMatrix = DirectX::XMLoadFloat4x4(reinterpret_cast<DirectX::XMFLOAT4X4*>(&projectionTransform.Right));
 
-				// interpolate projection matrix
-				if (mHolographicCameraId == 0)
-				{
-					// ?? how to interpolate
-					DirectX::XMStoreFloat4x4(&mMidProjectionMatrix, leftProjectionMatrix);
-				}
+                // interpolate projection matrix
+                if (mHolographicCameraId == 0)
+                {
+                    // TODO: provide combined matrix
+                    DirectX::XMStoreFloat4x4(&mMidProjectionMatrix, rightProjectionMatrix);
+                }
 
                 // get projection
                 DirectX::XMStoreFloat4x4(
@@ -1040,28 +1040,28 @@ DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getMidViewMatrix()
 
 DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getLeftViewMatrix()
 {
-	return mViewMatrices[0];
+    return mViewMatrices[0];
 }
 
 DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getRightViewMatrix()
 {
-	return mViewMatrices[1];
+    return mViewMatrices[1];
 }
 
 
 DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getMidProjectionMatrix()
 {
-	return mMidProjectionMatrix;
+    return mMidProjectionMatrix;
 }
 
 DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getLeftProjectionMatrix()
 {
-	return mProjectionMatrices[0];
+    return mProjectionMatrices[0];
 }
 
 DirectX::XMFLOAT4X4 const& HolographicSwapChain11::getRightProjectionMatrix()
 {
-	return mProjectionMatrices[1];
+    return mProjectionMatrices[1];
 }
 
 bool const& HolographicSwapChain11::getIsAutomaticStereoRenderingEnabled()

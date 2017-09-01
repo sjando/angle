@@ -40,24 +40,24 @@
 namespace
 {
 #ifdef ANGLE_ENABLE_WINDOWS_HOLOGRAPHIC
-	void storeMatrix (GLfloat* storage, const DirectX::XMFLOAT4X4 matrix) {
-		storage[0] = matrix._11;
-		storage[1] = matrix._12;
-		storage[2] = matrix._13;
-		storage[3] = matrix._14;
-		storage[4] = matrix._21;
-		storage[5] = matrix._22;
-		storage[6] = matrix._23;
-		storage[7] = matrix._24;
-		storage[8] = matrix._31;
-		storage[9] = matrix._32;
-		storage[10] = matrix._33;
-		storage[11] = matrix._34;
-		storage[12] = matrix._41;
-		storage[13] = matrix._42;
-		storage[14] = matrix._43;
-		storage[15] = matrix._44;
-	}
+    void storeMatrix (GLfloat* storage, const DirectX::XMFLOAT4X4 matrix) {
+        storage[0] = matrix._11;
+        storage[1] = matrix._12;
+        storage[2] = matrix._13;
+        storage[3] = matrix._14;
+        storage[4] = matrix._21;
+        storage[5] = matrix._22;
+        storage[6] = matrix._23;
+        storage[7] = matrix._24;
+        storage[8] = matrix._31;
+        storage[9] = matrix._32;
+        storage[10] = matrix._33;
+        storage[11] = matrix._34;
+        storage[12] = matrix._41;
+        storage[13] = matrix._42;
+        storage[14] = matrix._43;
+        storage[15] = matrix._44;
+    }
 #endif
 
 template <typename T>
@@ -1014,23 +1014,23 @@ void Context::getFloatv(GLenum pname, GLfloat *params)
       // This experimental value provides a mono view matrix that approximates the Windows
       // Holographic camera position. This matrix is in row-major format.
       case GLEXT_HOLOGRAPHIC_MONO_VIEW_MATRIX_ANGLE:
-		storeMatrix(params, rx::HolographicSwapChain11::getMidViewMatrix());
+        storeMatrix(params, rx::HolographicSwapChain11::getMidViewMatrix());
         break;
-	  case GLEXT_HOLOGRAPHIC_MONO_PROJECTION_MATRIX_ANGLE:
-		storeMatrix(params, rx::HolographicSwapChain11::getMidProjectionMatrix());
-		break;
-	  case GLEXT_HOLOGRAPHIC_LEFT_VIEW_MATRIX_ANGLE:
-		  storeMatrix(params, rx::HolographicSwapChain11::getLeftViewMatrix());
-		  break;
-	  case GLEXT_HOLOGRAPHIC_LEFT_PROJECTION_MATRIX_ANGLE:
-		  storeMatrix(params, rx::HolographicSwapChain11::getLeftProjectionMatrix());
-		  break;
-	  case GLEXT_HOLOGRAPHIC_RIGHT_VIEW_MATRIX_ANGLE:
-		  storeMatrix(params, rx::HolographicSwapChain11::getRightViewMatrix());
-		  break;
-	  case GLEXT_HOLOGRAPHIC_RIGHT_PROJECTION_MATRIX_ANGLE:
-		  storeMatrix(params, rx::HolographicSwapChain11::getRightProjectionMatrix());
-		  break;
+      case GLEXT_HOLOGRAPHIC_MONO_PROJECTION_MATRIX_ANGLE:
+        storeMatrix(params, rx::HolographicSwapChain11::getMidProjectionMatrix());
+        break;
+      case GLEXT_HOLOGRAPHIC_LEFT_VIEW_MATRIX_ANGLE:
+          storeMatrix(params, rx::HolographicSwapChain11::getLeftViewMatrix());
+          break;
+      case GLEXT_HOLOGRAPHIC_LEFT_PROJECTION_MATRIX_ANGLE:
+          storeMatrix(params, rx::HolographicSwapChain11::getLeftProjectionMatrix());
+          break;
+      case GLEXT_HOLOGRAPHIC_RIGHT_VIEW_MATRIX_ANGLE:
+          storeMatrix(params, rx::HolographicSwapChain11::getRightViewMatrix());
+          break;
+      case GLEXT_HOLOGRAPHIC_RIGHT_PROJECTION_MATRIX_ANGLE:
+          storeMatrix(params, rx::HolographicSwapChain11::getRightProjectionMatrix());
+          break;
 #endif
       default:
         mState.getFloatv(pname, params);
@@ -1403,14 +1403,14 @@ bool Context::getQueryParameterInfo(GLenum pname, GLenum *type, unsigned int *nu
       // This experimental value provides a mono view matrix that approximates the Windows
       // Holographic camera position. This matrix is in row-major format.
       case GLEXT_HOLOGRAPHIC_MONO_VIEW_MATRIX_ANGLE:
-	  case GLEXT_HOLOGRAPHIC_MONO_PROJECTION_MATRIX_ANGLE:
-	  case GLEXT_HOLOGRAPHIC_LEFT_VIEW_MATRIX_ANGLE:
-	  case GLEXT_HOLOGRAPHIC_LEFT_PROJECTION_MATRIX_ANGLE:
-	  case GLEXT_HOLOGRAPHIC_RIGHT_VIEW_MATRIX_ANGLE:
-	  case GLEXT_HOLOGRAPHIC_RIGHT_PROJECTION_MATRIX_ANGLE:
-		  *type = GL_FLOAT;
-		  *numParams = 16;
-		  return true;
+      case GLEXT_HOLOGRAPHIC_MONO_PROJECTION_MATRIX_ANGLE:
+      case GLEXT_HOLOGRAPHIC_LEFT_VIEW_MATRIX_ANGLE:
+      case GLEXT_HOLOGRAPHIC_LEFT_PROJECTION_MATRIX_ANGLE:
+      case GLEXT_HOLOGRAPHIC_RIGHT_VIEW_MATRIX_ANGLE:
+      case GLEXT_HOLOGRAPHIC_RIGHT_PROJECTION_MATRIX_ANGLE:
+          *type = GL_FLOAT;
+          *numParams = 16;
+          return true;
       // Checks whether the optional feature is enabled for automatic stereo rendering.
       case GLEXT_ENABLE_AUTOMATIC_STEREO_RENDERING_ANGLE:
           *type      = GL_BOOL;

@@ -66,11 +66,11 @@ class HolographicSwapChain11 : public SwapChainD3D
     virtual ID3D11ShaderResourceView *  getDepthStencilShaderResource();
 
     static DirectX::XMFLOAT4X4 const&   getMidViewMatrix();
-	static DirectX::XMFLOAT4X4 const&   getLeftViewMatrix();
-	static DirectX::XMFLOAT4X4 const&   getRightViewMatrix();
-	static DirectX::XMFLOAT4X4 const&   getMidProjectionMatrix();
-	static DirectX::XMFLOAT4X4 const&   getLeftProjectionMatrix();
-	static DirectX::XMFLOAT4X4 const&   getRightProjectionMatrix();
+    static DirectX::XMFLOAT4X4 const&   getLeftViewMatrix();
+    static DirectX::XMFLOAT4X4 const&   getRightViewMatrix();
+    static DirectX::XMFLOAT4X4 const&   getMidProjectionMatrix();
+    static DirectX::XMFLOAT4X4 const&   getLeftProjectionMatrix();
+    static DirectX::XMFLOAT4X4 const&   getRightProjectionMatrix();
     static bool const&                  getIsAutomaticStereoRenderingEnabled();
     static bool const&                  getIsAutomaticDepthBasedImageStabilizationEnabled();
     static bool const&                  getIsWaitForVBlankEnabled();
@@ -170,12 +170,12 @@ class HolographicSwapChain11 : public SwapChainD3D
     
     // A mono view matrix that represents the holographic camera's position and 
     // orientation within the coordinate system provided by the app.
-	static DirectX::XMFLOAT4X4          mViewMatrices[2];
+    static DirectX::XMFLOAT4X4          mViewMatrices[2];
     static DirectX::XMFLOAT4X4          mMidViewMatrix;
     static DirectX::XMFLOAT4X4          mMidViewMatrixInverse;
 
-	static DirectX::XMFLOAT4X4          mProjectionMatrices[2];
-	static DirectX::XMFLOAT4X4          mMidProjectionMatrix;
+    static DirectX::XMFLOAT4X4          mProjectionMatrices[2];
+    static DirectX::XMFLOAT4X4          mMidProjectionMatrix;
 
     // Tracks whether or not the app has enabled automatic stereo instancing.
     static bool                         mUseAutomaticStereoRendering;
