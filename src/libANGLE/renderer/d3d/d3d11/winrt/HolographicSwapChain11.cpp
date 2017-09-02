@@ -63,9 +63,9 @@ bool NeedsOffscreenTexture(Renderer11 *renderer, NativeWindow nativeWindow, EGLi
 
 DirectX::XMFLOAT4X4 HolographicSwapChain11::mViewMatrices[2];
 DirectX::XMFLOAT4X4 HolographicSwapChain11::mMidViewMatrix;
-DirectX::XMFLOAT4X4 HolographicSwapChain11::mMidViewMatrixInverse;
 DirectX::XMFLOAT4X4 HolographicSwapChain11::mProjectionMatrices[2];
 DirectX::XMFLOAT4X4 HolographicSwapChain11::mMidProjectionMatrix;
+DirectX::XMFLOAT4X4 HolographicSwapChain11::mMidViewProjMatrixInverse;
 bool HolographicSwapChain11::mUseAutomaticStereoRendering              = true;
 bool HolographicSwapChain11::mUseAutomaticDepthBasedImageStabilization = false;
 bool HolographicSwapChain11::mWaitForVBlank = true;
@@ -106,10 +106,10 @@ HolographicSwapChain11::HolographicSwapChain11(Renderer11 *renderer,
     XMStoreFloat4x4(&mMidViewMatrix, XMMatrixIdentity());
     XMStoreFloat4x4(&mViewMatrices[0], XMMatrixIdentity());
     XMStoreFloat4x4(&mViewMatrices[1], XMMatrixIdentity());
-    XMStoreFloat4x4(&mMidViewMatrixInverse, XMMatrixIdentity());
     XMStoreFloat4x4(&mMidProjectionMatrix, XMMatrixIdentity());
     XMStoreFloat4x4(&mProjectionMatrices[0], XMMatrixIdentity());
     XMStoreFloat4x4(&mProjectionMatrices[1], XMMatrixIdentity());
+    XMStoreFloat4x4(&mMidViewProjMatrixInverse, XMMatrixIdentity());
 
     InitDepthCurveArray(
         mNearPlaneDistance,
@@ -718,18 +718,18 @@ EGLint HolographicSwapChain11::updateHolographicRenderingParameters()
                         program->setUniformMatrix4fv(viewProjectionMatrixUniformLocation, 2, GL_FALSE, (GLfloat*) viewProj);
                     }
 
-                    // attach the mid-view matrix inverse, when enabled
+                    // attach inverse view/projection matrix for automatic mode
                     if (mUseAutomaticStereoRendering)
                     {
                         DirectX::XMVECTOR determinant;
-                        auto midViewInverse = XMMatrixInverse(&determinant, XMLoadFloat4x4(&mMidViewMatrix));
+                        auto viewProjInverse = XMMatrixInverse(&determinant, XMLoadFloat4x4(viewProj));
 
                         if (!XMVector4NearEqual(determinant, XMVectorZero(), XMVectorSplatEpsilon()))
                         {
-                            XMStoreFloat4x4(&mMidViewMatrixInverse, midViewInverse);
+                            XMStoreFloat4x4(&mMidViewProjMatrixInverse, viewProjInverse);
                         }
 
-                        GLint undoViewProjUniformLocation = program->getUniformLocation("uUndoMidViewMatrix");
+                        GLint undoViewProjUniformLocation = program->getUniformLocation("uUndoMidViewProjMatrix");
                         if (undoViewProjUniformLocation != -1)
                         {
                             // detach any existing buffers
@@ -740,8 +740,9 @@ EGLint HolographicSwapChain11::updateHolographicRenderingParameters()
                                 // Something unexpected has occured. We're probably in a bad state and should not continue.
                                 result = E_FAIL;
                             }
-                            program->setUniformMatrix4fv(undoViewProjUniformLocation, 1, GL_FALSE, (GLfloat*) &mMidViewMatrixInverse);
+                            program->setUniformMatrix4fv(undoViewProjUniformLocation, 1, GL_FALSE, (GLfloat*) &mMidViewProjMatrixInverse);
                         }
+
                     }
                 }
             }

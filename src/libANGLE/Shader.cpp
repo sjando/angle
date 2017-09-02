@@ -302,9 +302,9 @@ void Shader::compile(Compiler *compiler)
             size_t index2 = sourceString.find_last_of('}');
             std::string modifiedSourceString = 
                 sourceString.substr(0, index1) + 
-                "uniform mat4 uHolographicViewMatrix[2];\n uniform mat4 uHolographicProjectionMatrix[2];\n uniform mat4 uHolographicViewProjectionMatrix[2];\n uniform mat4 uUndoMidViewMatrix;\n out float vRenderTargetArrayIndex;\n " +
+                "uniform mat4 uHolographicViewMatrix[2];\n uniform mat4 uHolographicProjectionMatrix[2];\n uniform mat4 uHolographicViewProjectionMatrix[2];\n uniform mat4 uUndoMidViewProjMatrix;\n out float vRenderTargetArrayIndex;\n " +
                 sourceString.substr(index1, index2-index1) +
-                " int index = gl_InstanceIDUnmodified - (gl_InstanceID*2);\n vRenderTargetArrayIndex = float(index);\n gl_Position = uHolographicProjectionMatrix[index] * uHolographicViewMatrix[index] * uUndoMidViewMatrix * gl_Position;\n " +
+                " int index = gl_InstanceIDUnmodified - (gl_InstanceID*2);\n vRenderTargetArrayIndex = float(index);\n gl_Position = uHolographicProjectionMatrix[index] * uHolographicViewMatrix[index] * uUndoMidViewProjMatrix * gl_Position;\n " +
                 sourceString.substr(index2);
             sourceString = modifiedSourceString;
         }
