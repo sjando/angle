@@ -172,10 +172,11 @@ class HolographicSwapChain11 : public SwapChainD3D
     // orientation within the coordinate system provided by the app.
     static DirectX::XMFLOAT4X4          mViewMatrices[2];
     static DirectX::XMFLOAT4X4          mMidViewMatrix;
-    static DirectX::XMFLOAT4X4          mMidViewMatrixInverse;
 
     static DirectX::XMFLOAT4X4          mProjectionMatrices[2];
     static DirectX::XMFLOAT4X4          mMidProjectionMatrix;
+
+    static DirectX::XMFLOAT4X4          mMidViewProjMatrixInverse;
 
     // Tracks whether or not the app has enabled automatic stereo instancing.
     static bool                         mUseAutomaticStereoRendering;
